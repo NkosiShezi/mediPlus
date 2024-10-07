@@ -1,14 +1,31 @@
 import { Claim, TableState } from "../../../interfaces/claims";
+import {
+  numberOfClaims,
+  payouts,
+  rejectedClaims,
+} from "../../../utils/selectors";
+import { getStats } from "../right/reports";
+
+export const getReport = async () => {
+  const loading = "loading...";
+  numberOfClaims().innerHTML = loading;
+  rejectedClaims().innerHTML = loading;
+  payouts().innerHTML = loading;
+
+  const report = await getStats();
+
+  numberOfClaims().innerHTML = report.claims;
+  rejectedClaims().innerHTML = report.rejectedClaims;
+  payouts().innerHTML = report.payouts;
+};
 
 const deleteInfo = (index: number, tableState: TableState): TableState => {
   let { currentIndex, startIndex, endIndex, maxIndex } = tableState;
-  const originalData = JSON.parse(
-    localStorage.getItem("userProfile") as string
-  );
+  const originalData = JSON.parse(localStorage.getItem("claimsData") as string);
 
-  if (confirm("Aer you sure want to delete?")) {
+  if (confirm("Confirm to delete claim?")) {
     originalData.splice(index, 1);
-    localStorage.setItem("userProfile", JSON.stringify(originalData));
+    localStorage.setItem("claimsData", JSON.stringify(originalData));
 
     const getData = [...originalData];
 
@@ -26,8 +43,8 @@ const deleteInfo = (index: number, tableState: TableState): TableState => {
     tableState = highlightIndexBtn(tableState);
     displayIndexBtn(tableState);
 
-    var nextBtn = document.querySelector(".next");
-    var prevBtn = document.querySelector(".prev");
+    const nextBtn = document.querySelector(".next");
+    const prevBtn = document.querySelector(".prev");
 
     if (Math.floor(tableState.maxIndex) > tableState.currentIndex) {
       nextBtn?.classList.add("act");
@@ -45,7 +62,7 @@ const deleteInfo = (index: number, tableState: TableState): TableState => {
 
 export function preLoadCalculations(tableState: TableState): TableState {
   let { arrayLength, maxIndex, tableSize } = tableState;
-  const getData = JSON.parse(localStorage.getItem("userProfile") as string);
+  const getData = JSON.parse(localStorage.getItem("claimsData") as string);
   const array = getData;
 
   arrayLength = array.length;
@@ -97,7 +114,7 @@ export function highlightIndexBtn(tableState: TableState): TableState {
   }
 
   if (maxIndex >= 2) {
-    var nextBtn = document.querySelector(".next");
+    const nextBtn = document.querySelector(".next");
     nextBtn?.classList.add("act");
   }
 
@@ -105,7 +122,7 @@ export function highlightIndexBtn(tableState: TableState): TableState {
     ? (entries.textContent = `Showing ${startIndex} to ${endIndex} of ${arrayLength} entries`)
     : "";
 
-  var paginationBtns = document.querySelectorAll(".pagination button");
+  const paginationBtns = document.querySelectorAll(".pagination button");
   paginationBtns.forEach((btn) => {
     btn.classList.remove("active");
     if (btn.getAttribute("index") === currentIndex.toString()) {
@@ -124,29 +141,26 @@ export function showInfo(tableState: TableState) {
   const { startIndex, endIndex } = tableState;
   document.querySelectorAll(".claimDetails").forEach((info) => info.remove());
 
-  const getData = JSON.parse(localStorage.getItem("userProfile") as string);
+  const getData = JSON.parse(localStorage.getItem("claimsData") as string);
 
-  var tab_start = startIndex - 1;
-  var tab_end = endIndex;
+  const tab_start = startIndex - 1;
+  const tab_end = endIndex;
 
   if (getData.length > 0) {
     let tableRows = "";
 
-    for (var i = tab_start; i < tab_end; i++) {
-      var staff = getData[i] as Claim;
+    for (let i = tab_start; i < tab_end; i++) {
+      const staff = getData[i] as Claim;
 
       if (staff) {
         tableRows += `<tr class="test">
         <td>${staff.name}</td>
         <td>${staff.surname}</td>
-        <td class="warning">${staff.date}</td>
-        <td class="primary">${staff.placeOfService}</td>
+        <td>${staff.date}</td>
+        <td>${staff.placeOfService}</td>
         <td class="primary">R${staff.amountClaimed}</td>
         <td class="primary">R${staff.amountPaid}</td>
-
         <td><button id="${i}" class="deleteBtn">Delete</button></td>
-
-        
       </tr>`;
       }
     }
@@ -178,8 +192,8 @@ export function showInfo(tableState: TableState) {
 
 function next(tableState: TableState): TableState {
   let { currentIndex, maxIndex } = tableState;
-  var prevBtn = document.querySelector(".prev");
-  var nextBtn = document.querySelector(".next");
+  const prevBtn = document.querySelector(".prev");
+  const nextBtn = document.querySelector(".next");
 
   if (currentIndex <= maxIndex - 1) {
     currentIndex++;
@@ -196,7 +210,7 @@ function next(tableState: TableState): TableState {
 
 function prev(tableState: TableState): TableState {
   let { currentIndex } = tableState;
-  var prevBtn = document.querySelector(".prev");
+  const prevBtn = document.querySelector(".prev");
 
   if (currentIndex > 1) {
     currentIndex--;
@@ -213,11 +227,11 @@ function prev(tableState: TableState): TableState {
 }
 
 export function paginationBtn(i: number, tableState: TableState): TableState {
-  let { currentIndex, maxIndex } = tableState;
+  let { currentIndex } = tableState;
   currentIndex = i;
 
-  var prevBtn = document.querySelector(".prev");
-  var nextBtn = document.querySelector(".next");
+  const prevBtn = document.querySelector(".prev");
+  const nextBtn = document.querySelector(".next");
 
   tableState = highlightIndexBtn({ ...tableState, currentIndex });
 

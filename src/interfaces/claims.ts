@@ -6,6 +6,7 @@ export interface TableState {
   currentIndex: number;
   maxIndex: number;
 }
+
 export interface Claim {
   name: string;
   surname: string;
@@ -14,4 +15,10 @@ export interface Claim {
   amountClaimed: number;
   amountPaid: number;
   accountType: string;
+}
+
+export interface ReportState {
+  claims: string;
+  rejectedClaims: string;
+  payouts: string;
 }
