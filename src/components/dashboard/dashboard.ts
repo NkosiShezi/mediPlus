@@ -47,9 +47,9 @@ const Dashboard = (element: HTMLDivElement) => {
     popupForm()?.classList.remove("active");
   });
 
-  let originalData = localStorage.getItem("claimsData")
-    ? JSON.parse(localStorage.getItem("claimsData") as string)
-    : [];
+  const claimsInitialData = localStorage.getItem("claimsData") as string;
+
+  let originalData = claimsInitialData ? JSON.parse(claimsInitialData) : [];
   let getData = [...originalData];
 
   let tableState = initialState;
