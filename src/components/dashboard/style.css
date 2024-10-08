@@ -55,8 +55,9 @@ body {
   display: grid;
   width: 96%;
   margin: 0 auto;
-  gap: 1.8rem;
-  grid-template-columns: 14rem auto 23rem;
+  gap: 2.8rem;
+  grid-template-columns: 14rem 57rem 23rem;
+  margin-top: 20px;
 }
 
 a {
@@ -334,11 +335,11 @@ main .insights small {
   display: block;
 }
 
-main .recent-orders {
+main .claims-list {
   margin-top: 0.8rem;
 }
 
-main .recent-orders table {
+main .claims-list table {
   background: var(--color-white);
   width: 100%;
   border-radius: var(--card-border-radius);
@@ -348,7 +349,7 @@ main .recent-orders table {
   transition: all 300ms ease;
 }
 
-main .recent-orders table:hover {
+main .claims-list table:hover {
   box-shadow: none;
 }
 
@@ -362,7 +363,7 @@ main table tbody tr:last-child {
   border: none;
 }
 
-main .recent-orders a {
+main .claims-list a {
   text-align: center;
   display: block;
   margin: 1rem auto;
@@ -444,15 +445,15 @@ main .recent-orders a {
 
 /* Sales  */
 
-.right .sales-analytics {
+.right .report-analytics {
   margin-top: 1rem;
 }
 
-.right .sales-analytics h2 {
+.right .report-analytics h2 {
   margin-bottom: 0.8rem;
 }
 
-.right .sales-analytics .item {
+.right .report-analytics .item {
   background: var(--color-white);
   display: flex;
   align-items: center;
@@ -464,11 +465,11 @@ main .recent-orders a {
   transition: all 300ms ease;
 }
 
-.right .sales-analytics .item:hover {
+.right .report-analytics .item:hover {
   box-shadow: none;
 }
 
-.right .sales-analytics .item .right {
+.right .report-analytics .item .right {
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -476,7 +477,7 @@ main .recent-orders a {
   width: 100%;
 }
 
-.right .sales-analytics .item .icon {
+.right .report-analytics .item .icon {
   padding: 0.6rem;
   color: var(--color-white);
   border-radius: 50%;
@@ -484,15 +485,15 @@ main .recent-orders a {
   display: flex;
 }
 
-.right .sales-analytics .item.offline .icon {
+.right .report-analytics .item.rejected-claims .icon {
   background: var(--color-danger);
 }
 
-.right .sales-analytics .item.customers .icon {
+.right .report-analytics .item.payouts .icon {
   background: var(--color-success);
 }
 
-.right .sales-analytics .add-product {
+.right .report-analytics .add-claim {
   cursor: pointer;
   background-color: var(--color-primary);
   border: 2px solid var(--color-primary);
@@ -502,13 +503,13 @@ main .recent-orders a {
   justify-content: center;
 }
 
-.right .sales-analytics .add-product div {
+.right .report-analytics .add-claim div {
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
-.right .sales-analytics .add-product div h3 {
+.right .report-analytics .add-claim div h3 {
   font-weight: 600;
 }
 
@@ -518,15 +519,6 @@ main .recent-orders a {
   transform: scale(1);
   opacity: 1;
   visibility: visible;
-}
-
-.container {
-  padding: 20px;
-  box-shadow: 3px 3px 20px var(--dark1);
-  background: var(--dark3);
-  border-radius: 10px;
-  margin: 10px;
-  margin-top: 50px;
 }
 
 .container header .filterEntries {
@@ -575,8 +567,8 @@ main .recent-orders a {
 }
 
 header .addMemberBtn button,
-.popup header .closeBtn,
-.popup footer .submitBtn {
+.claim-section header .close-button,
+.claim-section footer .submit-claim-button {
   padding: 9px 14px;
   color: var(--color-white);
   background: transparent;
@@ -589,7 +581,7 @@ header .addMemberBtn button,
   border-radius: 5px;
 }
 
-.popup header .closeBtn {
+.claim-section header .close-button {
   background: var(--color-danger);
 }
 
@@ -713,18 +705,21 @@ footer .pagination button {
 
 .pagination button.active,
 .pagination button:hover {
-  background: var(--color-primary);
-  color: var(--color-white);
+  color: var(--color-primary);
 }
 
 .pagination button.act:first-child {
   opacity: 1;
   pointer-events: auto;
+  color: var(--color-white);
+  background: var(--color-success);
 }
 
 .pagination button.act:last-child {
   opacity: 1;
   pointer-events: auto;
+  color: var(--color-white);
+  background: var(--color-success);
 }
 
 table tr .empty {
@@ -734,7 +729,7 @@ table tr .empty {
 
 /* Popup Form */
 
-.dark_bg {
+.claim-form {
   position: fixed;
   top: 0;
   left: 0;
@@ -748,7 +743,7 @@ table tr .empty {
   visibility: hidden;
 }
 
-.popup {
+.claim-section {
   border-radius: 5px;
   box-shadow: 3px 3px 20px rgba(0, 0, 0, 0.3);
   background: white;
@@ -759,7 +754,7 @@ table tr .empty {
   visibility: hidden;
 }
 
-.popup header {
+.claim-section header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -767,31 +762,31 @@ table tr .empty {
   padding: 10px 20px;
 }
 
-.popup header .closeBtn {
+.claim-section header .close-button {
   font-size: 30px;
   font-weight: 300;
   padding: 0 15px;
 }
 
-.popup header .closeBtn:hover,
-.popup footer .submitBtn:hover {
+.claim-section header .close-button:hover,
+.claim-section footer .submit-claim-button:hover {
   border-color: var(--dark7);
   transition: 0.3s;
 }
 
-.popup footer {
+.claim-section footer {
   border-top: 1px solid var(--dark7);
   padding: 12px 20px;
   text-align: right;
 }
 
-.popup form {
+.claim-section form {
   padding: 10px 20px;
   display: flex;
   align-items: flex-start;
 }
 
-.popup .imgholder {
+.claim-section .imgholder {
   width: 150px;
   height: 150px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
@@ -802,7 +797,7 @@ table tr .empty {
   margin-top: 15px;
 }
 
-.popup .imgholder .upload {
+.claim-section .imgholder .upload {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -835,31 +830,31 @@ table tr .empty {
   height: 100%;
 }
 
-form .inputFieldContainer .nameField,
-form .inputFieldContainer .ageCityField,
-form .inputFieldContainer .postSalary {
+form .claim-fields-container .name-field,
+form .claim-fields-container .place-field-container,
+form .claim-fields-container .claim-field {
   display: flex;
   justify-content: space-between;
   gap: 15px;
 }
 
-form .inputFieldContainer .nameField input,
-form .inputFieldContainer .ageCityField input,
-form .inputFieldContainer .postSalary input {
+form .claim-fields-container .name-field input,
+form .claim-fields-container .place-field-container input,
+form .claim-fields-container .claim-field input {
   width: 200px;
 }
 
-.inputFieldContainer .form_control {
+.claim-fields-container .form-control {
   margin: 10px 0;
 }
 
-.inputFieldContainer .form_control label {
+.claim-fields-container .form-control label {
   display: block;
   color: var(--dark8);
   margin-bottom: 5px;
 }
 
-.form_control input {
+.form-control input {
   padding: 10px;
   border: 1px solid var(--dark6);
   color: var(--dark8);
@@ -871,8 +866,8 @@ form .inputFieldContainer .postSalary input {
   width: 100%;
 }
 
-.form_control input:focus,
-.form_control input:valid {
+.form-control input:focus,
+.form-control input:valid {
   border-color: var(--dark7);
 }
 

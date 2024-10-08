@@ -2,14 +2,17 @@ import { ReportState } from "../../../interfaces/claims";
 
 export const getStats = (): Promise<ReportState> =>
   new Promise((resolve, reject) => {
-    // Simulating an asynchronous operation (e.g., API call, setTimeout)
     setTimeout(() => {
-      const success = true; // You can toggle this to simulate success or failure
+      const success = true;
 
       if (success) {
-        resolve({ claims: "32", rejectedClaims: "35", payouts: "345" });
+        const [claims, rejectedClaims, payouts] = [...Array(3)].map(
+          () => Math.floor(Math.random() * 100) + 1
+        );
+
+        resolve({ claims, rejectedClaims, payouts });
       } else {
-        reject("Operation failed.");
+        reject("Failed.");
       }
-    }, 2000); // Simulates a 2 second delay
+    }, 3000);
   });

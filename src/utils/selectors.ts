@@ -1,13 +1,13 @@
 export const tabSize = () =>
   document.getElementById("table_size") as HTMLInputElement;
-export const crossBtn = () => document.querySelector(".closeBtn");
-export const submitBtn = () => document.querySelector(".submitBtn")!;
-export const modalTitle = () => document.querySelector(".modalTitle")!;
+export const crossBtn = () => document.querySelector(".close-button");
+export const submitBtn = () => document.querySelector(".submit-claim-button")!;
+export const modalTitle = () => document.querySelector(".modal-title")!;
 export const form = () => document.querySelector("form");
 export const filterData = () =>
   document.getElementById("search")! as HTMLInputElement;
-export const darkBg = () => document.querySelector(".dark_bg");
-export const popupForm = () => document.querySelector(".popup");
+export const darkBg = () => document.querySelector(".claim-form");
+export const popupForm = () => document.querySelector(".claim-section");
 export const name = () => document.getElementById("name")! as HTMLInputElement;
 export const surname = () =>
   document.getElementById("surname") as HTMLInputElement;
@@ -18,7 +18,7 @@ export const amountPaid = () =>
   document.getElementById("amountPaid") as HTMLInputElement;
 export const placeOfService = () =>
   document.getElementById("placeOfService") as HTMLInputElement;
-export const addClaim = () => document.querySelector("div .add-product");
+export const addClaim = () => document.querySelector("div .add-claim");
 
 export const numberOfClaims = () =>
   document.getElementById("number_of_claims")!;

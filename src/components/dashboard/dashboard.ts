@@ -6,9 +6,9 @@ import formHtml from "./form/form.html?raw";
 
 import { Claim } from "../../interfaces/claims";
 import {
-  showInfo,
-  displayIndexBtn,
-  highlightIndexBtn,
+  displayClaims,
+  showPaginationButtons,
+  activePaginationBtn,
   getReport,
 } from "./claims/claims";
 import { claims, initialState } from "../../data/claims";
@@ -35,14 +35,14 @@ import {
 const Dashboard = (element: HTMLDivElement) => {
   localStorage.setItem("claimsData", JSON.stringify(claims));
 
-  element.innerHTML = `<div class="container">${sideBar} ${claimsHtml} ${right} ${formHtml} </div>`;
+  element.innerHTML = `<div class="container">${sideBar}${claimsHtml}${right}${formHtml}</div>`;
 
-  addClaim()?.addEventListener("click", function () {
+  addClaim()?.addEventListener("click", () => {
     darkBg()?.classList.add("active");
     popupForm()?.classList.add("active");
   });
 
-  crossBtn()?.addEventListener("click", function () {
+  crossBtn()?.addEventListener("click", () => {
     darkBg()?.classList.remove("active");
     popupForm()?.classList.remove("active");
   });
@@ -72,16 +72,16 @@ const Dashboard = (element: HTMLDivElement) => {
     getData = [...originalData];
     localStorage.setItem("claimsData", JSON.stringify(originalData));
 
-    submitBtn() ? (submitBtn().innerHTML = "Submit") : "";
-    modalTitle() ? (modalTitle().innerHTML = "Fill the Form") : "";
+    submitBtn().innerHTML = "Submit";
+    modalTitle().innerHTML = "Fill the Form";
 
     darkBg()?.classList.remove("active");
     popupForm()?.classList.remove("active");
     form()?.reset();
 
-    tableState = highlightIndexBtn(tableState);
-    displayIndexBtn(tableState);
-    showInfo(tableState);
+    tableState = activePaginationBtn(tableState);
+    showPaginationButtons(tableState);
+    displayClaims(tableState);
 
     var nextBtn = document.querySelector(".next");
     var prevBtn = document.querySelector(".prev");
@@ -105,7 +105,7 @@ const Dashboard = (element: HTMLDivElement) => {
       currentIndex: 1,
       startIndex: 1,
     };
-    displayIndexBtn(tableState);
+    showPaginationButtons(tableState);
   });
 
   filterData().addEventListener("input", () => {
@@ -125,10 +125,10 @@ const Dashboard = (element: HTMLDivElement) => {
       getData = JSON.parse(localStorage.getItem("claimsData") as string) || [];
     }
 
-    displayIndexBtn({ ...tableState, currentIndex: 1, startIndex: 1 });
+    showPaginationButtons({ ...tableState, currentIndex: 1, startIndex: 1 });
   });
 
-  displayIndexBtn({ ...tableState });
+  showPaginationButtons({ ...tableState });
 
   getReport();
 };

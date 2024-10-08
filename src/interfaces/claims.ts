@@ -18,7 +18,7 @@ export interface Claim {
 }
 
 export interface ReportState {
-  claims: string;
-  rejectedClaims: string;
-  payouts: string;
+  claims: number;
+  rejectedClaims: number;
+  payouts: number;
 }

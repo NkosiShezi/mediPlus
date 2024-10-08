@@ -7,19 +7,23 @@ import {
 import { getStats } from "../right/reports";
 
 export const getReport = async () => {
-  const loading = "loading...";
-  numberOfClaims().innerHTML = loading;
-  rejectedClaims().innerHTML = loading;
-  payouts().innerHTML = loading;
+  const loading = "<span class='material-symbols-sharp'> downloading </span>";
 
-  const report = await getStats();
+  const reports = [numberOfClaims(), rejectedClaims(), payouts()];
+  reports.map((report) => (report.innerHTML = loading));
 
-  numberOfClaims().innerHTML = report.claims;
-  rejectedClaims().innerHTML = report.rejectedClaims;
-  payouts().innerHTML = report.payouts;
+  try {
+    const stats = await getStats();
+
+    numberOfClaims().innerHTML = `${stats.claims}`;
+    rejectedClaims().innerHTML = `${stats.rejectedClaims}`;
+    payouts().innerHTML = `${stats.payouts}`;
+  } catch (error) {
+    reports.map((report) => (report.innerHTML = error as string));
+  }
 };
 
-const deleteInfo = (index: number, tableState: TableState): TableState => {
+const deleteClaim = (index: number, tableState: TableState): TableState => {
   let { currentIndex, startIndex, endIndex, maxIndex } = tableState;
   const originalData = JSON.parse(localStorage.getItem("claimsData") as string);
 
@@ -29,7 +33,7 @@ const deleteInfo = (index: number, tableState: TableState): TableState => {
 
     const getData = [...originalData];
 
-    tableState = preLoadCalculations(tableState);
+    tableState = tableData(tableState);
 
     if (getData.length === 0) {
       currentIndex = 1;
@@ -39,9 +43,9 @@ const deleteInfo = (index: number, tableState: TableState): TableState => {
       currentIndex = maxIndex;
     }
 
-    showInfo(tableState);
-    tableState = highlightIndexBtn(tableState);
-    displayIndexBtn(tableState);
+    displayClaims(tableState);
+    tableState = activePaginationBtn(tableState);
+    showPaginationButtons(tableState);
 
     const nextBtn = document.querySelector(".next");
     const prevBtn = document.querySelector(".prev");
@@ -60,12 +64,11 @@ const deleteInfo = (index: number, tableState: TableState): TableState => {
   return { ...tableState, currentIndex, startIndex, endIndex };
 };
 
-export function preLoadCalculations(tableState: TableState): TableState {
+export const tableData = (tableState: TableState): TableState => {
   let { arrayLength, maxIndex, tableSize } = tableState;
-  const getData = JSON.parse(localStorage.getItem("claimsData") as string);
-  const array = getData;
+  const claims = JSON.parse(localStorage.getItem("claimsData") as string);
 
-  arrayLength = array.length;
+  arrayLength = claims.length;
   maxIndex = arrayLength / tableSize;
 
   if (arrayLength % tableSize > 0) {
@@ -73,35 +76,35 @@ export function preLoadCalculations(tableState: TableState): TableState {
   }
 
   return { ...tableState, arrayLength, maxIndex };
-}
+};
 
-export function displayIndexBtn(tableState: TableState) {
-  tableState = preLoadCalculations(tableState);
+export const showPaginationButtons = (tableState: TableState) => {
+  tableState = tableData(tableState);
   const { maxIndex } = tableState;
 
   const pagination = document.querySelector(".pagination");
 
-  pagination ? (pagination.innerHTML = "") : "";
+  const nextButton =
+    '<button id="next_btn" class="next"> <span class="material-symbols-sharp"> arrow_forward_ios </span></button>';
+  const previousButton =
+    '<button class="prev"><span class="material-symbols-sharp"> arrow_back_ios</span></button>';
 
-  pagination
-    ? (pagination.innerHTML = '<button class="prev">Previous</button>')
-    : "";
+  if (pagination) {
+    pagination.innerHTML = previousButton;
+    for (let i = 1; i <= maxIndex; i++) {
+      pagination
+        ? (pagination.innerHTML +=
+            '<button index="' + i + '">' + i + "</button>")
+        : "";
+    }
 
-  for (let i = 1; i <= maxIndex; i++) {
-    pagination
-      ? (pagination.innerHTML += '<button index="' + i + '">' + i + "</button>")
-      : "";
+    pagination.innerHTML += nextButton;
   }
 
-  pagination
-    ? (pagination.innerHTML +=
-        '<button id="next_btn" class="next">Next</button>')
-    : "";
+  tableState = activePaginationBtn(tableState);
+};
 
-  tableState = highlightIndexBtn(tableState);
-}
-
-export function highlightIndexBtn(tableState: TableState): TableState {
+export const activePaginationBtn = (tableState: TableState): TableState => {
   const entries = document.querySelector(".showEntries");
 
   let { startIndex, currentIndex, tableSize, endIndex, arrayLength, maxIndex } =
@@ -118,49 +121,55 @@ export function highlightIndexBtn(tableState: TableState): TableState {
     nextBtn?.classList.add("act");
   }
 
-  entries
-    ? (entries.textContent = `Showing ${startIndex} to ${endIndex} of ${arrayLength} entries`)
-    : "";
+  if (entries) {
+    entries.textContent = `Showing ${startIndex} to ${endIndex} of ${arrayLength} entries`;
+  }
 
   const paginationBtns = document.querySelectorAll(".pagination button");
-  paginationBtns.forEach((btn) => {
+
+  [...paginationBtns].map((btn) => {
     btn.classList.remove("active");
     if (btn.getAttribute("index") === currentIndex.toString()) {
       btn.classList.add("active");
     }
   });
 
-  showInfo({ ...tableState, startIndex, endIndex });
+  displayClaims({ ...tableState, startIndex, endIndex });
 
   return { ...tableState, startIndex, endIndex };
-}
+};
 
-export function showInfo(tableState: TableState) {
+export const displayClaims = (tableState: TableState) => {
   const table = document.querySelector("#table-body")!;
 
   const { startIndex, endIndex } = tableState;
-  document.querySelectorAll(".claimDetails").forEach((info) => info.remove());
+
+  const claimD = document.querySelectorAll(".claimDetails");
+
+  [...claimD].map((claimData) => {
+    claimData.remove();
+  });
 
   const getData = JSON.parse(localStorage.getItem("claimsData") as string);
 
-  const tab_start = startIndex - 1;
-  const tab_end = endIndex;
+  const claimStartIndex = startIndex - 1;
+  const claimEndIndex = endIndex;
 
   if (getData.length > 0) {
     let tableRows = "";
 
-    for (let i = tab_start; i < tab_end; i++) {
-      const staff = getData[i] as Claim;
+    for (let i = claimStartIndex; i < claimEndIndex; i++) {
+      const claim = getData[i] as Claim;
 
-      if (staff) {
+      if (claim) {
         tableRows += `<tr class="test">
-        <td>${staff.name}</td>
-        <td>${staff.surname}</td>
-        <td>${staff.date}</td>
-        <td>${staff.placeOfService}</td>
-        <td class="primary">R${staff.amountClaimed}</td>
-        <td class="primary">R${staff.amountPaid}</td>
-        <td><button id="${i}" class="deleteBtn">Delete</button></td>
+        <td>${claim.name}</td>
+        <td>${claim.surname}</td>
+        <td>${claim.date}</td>
+        <td>${claim.placeOfService}</td>
+        <td class="primary">R${claim.amountClaimed}</td>
+        <td class="primary">R${claim.amountPaid}</td>
+        <td><button id="${i}" class="deleteClaimBtn">Delete</button></td>
       </tr>`;
       }
     }
@@ -170,27 +179,25 @@ export function showInfo(tableState: TableState) {
     table.innerHTML = tableRows;
   }
 
-  const deletBtn = document.querySelectorAll(".deleteBtn");
-
-  for (let i = 0; i < deletBtn.length; i++) {
-    const btn = deletBtn[i];
-    btn.addEventListener("click", function () {
-      tableState = deleteInfo(Number(btn.id), tableState);
+  const deletBtn = document.querySelectorAll(".deleteClaimBtn");
+  [...deletBtn].map((deleteBtn) => {
+    deleteBtn.addEventListener("click", () => {
+      tableState = deleteClaim(Number(deleteBtn.id), tableState);
     });
-  }
+  });
 
   const nextButton = document.querySelector(".next")!;
-  nextButton?.addEventListener("click", function () {
+  nextButton?.addEventListener("click", () => {
     tableState = next(tableState);
   });
 
   const prevButton = document.querySelector(".prev")!;
-  prevButton?.addEventListener("click", function () {
+  prevButton?.addEventListener("click", () => {
     tableState = prev(tableState);
   });
-}
+};
 
-function next(tableState: TableState): TableState {
+const next = (tableState: TableState): TableState => {
   let { currentIndex, maxIndex } = tableState;
   const prevBtn = document.querySelector(".prev");
   const nextBtn = document.querySelector(".next");
@@ -199,16 +206,16 @@ function next(tableState: TableState): TableState {
     currentIndex++;
     prevBtn?.classList.add("act");
 
-    tableState = highlightIndexBtn({ ...tableState, currentIndex });
+    tableState = activePaginationBtn({ ...tableState, currentIndex });
   }
 
   if (tableState.currentIndex > tableState.maxIndex - 1) {
     nextBtn?.classList.remove("act");
   }
   return { ...tableState, currentIndex };
-}
+};
 
-function prev(tableState: TableState): TableState {
+const prev = (tableState: TableState): TableState => {
   let { currentIndex } = tableState;
   const prevBtn = document.querySelector(".prev");
 
@@ -216,7 +223,7 @@ function prev(tableState: TableState): TableState {
     currentIndex--;
     prevBtn?.classList.add("act");
 
-    tableState = highlightIndexBtn({ ...tableState, currentIndex });
+    tableState = activePaginationBtn({ ...tableState, currentIndex });
   }
 
   if (currentIndex < 2) {
@@ -224,30 +231,4 @@ function prev(tableState: TableState): TableState {
   }
 
   return { ...tableState, currentIndex };
-}
-
-export function paginationBtn(i: number, tableState: TableState): TableState {
-  let { currentIndex } = tableState;
-  currentIndex = i;
-
-  const prevBtn = document.querySelector(".prev");
-  const nextBtn = document.querySelector(".next");
-
-  tableState = highlightIndexBtn({ ...tableState, currentIndex });
-
-  if (tableState.currentIndex > tableState.maxIndex - 1) {
-    nextBtn?.classList.remove("act");
-  } else {
-    nextBtn?.classList.add("act");
-  }
-
-  if (tableState.currentIndex > 1) {
-    prevBtn?.classList.add("act");
-  }
-
-  if (tableState.currentIndex < 2) {
-    prevBtn?.classList.remove("act");
-  }
-
-  return { ...tableState, currentIndex };
-}
+};
